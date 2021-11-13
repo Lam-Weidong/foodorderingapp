@@ -1,0 +1,34 @@
+version: "3.3"
+services:
+  api-gateway: 
+    build: ./api_gateway
+    image: orderapi/api_gateway
+    container_name: api_gateway
+    volumes:
+      - ./api_gateway/app.py:/app/app.py
+    ports:
+      - 20000:15000
+    environment:
+        MONGO_USERNAME: comp3122
+        MONGO_PASSWORD: 12345
+        MONGO_SERVER_HOST: mongo
+        MONGO_SERVER_PORT: 27017
+    depends_on:
+      -  mongo   
+                
+  mongo: #original mongo hostname/username/password
+    image: mongo
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: comp3122
+      MONGO_INITDB_ROOT_PASSWORD: 12345
+      MONGO_INITDB_DATABASE: admin
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+networks:
+  default:
+    name: orderapi
+volumes:
+  mongo_volume:
+    name: mongo_vol
+
