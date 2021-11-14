@@ -453,9 +453,86 @@ def generate_order_by_id(customer_id):
     if 'token' not in session:
             # If user have not login
             return jsonify({"error":"you need to login first"}),401
-    return jsonify({"message":"unfinished"}),200
+    pipeline=[
+        { "$match": {'customer_id':customer_id}}, 
+        { "$project": {'_id':0}},        
+        {
+            '$lookup':
+            {
+                'from': "customer",
+                'localField': "customer_id",
+                'foreignField': "customer_id",
+                'as': "customer_details",
+                'pipeline': [
+                    { '$project': {'_id':0, 'customer_id':0}}
+                ]
+            }
+            
+        },  
+        { "$project": {'_id':0}},        
+        {
+            '$lookup':
+            {
+                'from': "shop",
+                'localField': "shop_id",
+                'foreignField': "shop_id",
+                'as': "shop_details",
+                'pipeline': [
+                    { '$project': {'_id':0, 'shop_id':0}}
+                ]
+            }
+            
+        },               
+        { "$out": "order"}        
+        ] 
+    
+    mycol2.aggregate(pipeline)
+    return jsonify({"message":"added order"}),201
 
+# Get all orders
+@app.route('/orders', methods=['GET'])
+def get_orders():
+    if 'token' not in session:
+            # If user have not login
+            return jsonify({"error":"you need to login first"}),401
+    output =[]    
+    results = list(mycol5.find({},{"_id":0},).sort('customer_id'))
 
+    l = len(results)
+    if l >0:
+        for x in results:
+            print(x, flush=True)
+            output.append(x)
+        return jsonify(output),200 
+    else:
+        print("not found!",flush=True)
+        return jsonify({"error":"not found"}),404 
+
+# Get order by customer id
+@app.route('/orders/<customer_id>', methods=['GET'])
+def get_order_by_id(customer_id):
+    if 'token' not in session:
+            # If user have not login
+            return jsonify({"error":"you need to login first"}),401
+    output =[]    
+    results = list(mycol5.find({ "customer_id": customer_id},{'_id':0}))
+    
+    l = len(results)
+    if l >0:
+        return jsonify(results),200 
+    else:
+        print("not found!",flush=True)
+        return jsonify({"error":"not found"}),404 
+
+#delete order
+@app.route('/orders/<customer_id>/delete', methods=['DELETE'])
+def del_order(customer_id):
+    if 'token' not in session:
+            # If user have not login
+            return jsonify({"error":"you need to login first"}),401
+    del_data = { "customer_id" : customer_id }
+    mycol5.delete_one(del_data)
+    return jsonify({"message":"order deleted"}),200
 
 #start flask server
 if __name__ == '__main__':
