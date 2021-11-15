@@ -69,10 +69,37 @@ services:
       MONGO_INITDB_DATABASE: admin
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+  grafana:
+    image: grafana/grafana:7.5.10
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks: 
+      - net
+    ports: 
+      - 3000:3000
+    volumes:
+      - grafana:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus:v2.26.0
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - net
+    ports:
+      - "9090:9090"
+    links:
+      - mongo:mongo
+      - grafana:grafana
+      - api-gateway:api-gateway
+
 networks:
-  default:
-    name: orderapi
+  net:
+    driver: overlay
+
 volumes:
-  mongo_volume:
-    name: mongo_vol
+  grafana:
+    driver: local
+
 
