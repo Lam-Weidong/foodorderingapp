@@ -1,0 +1,78 @@
+version: "3.3"
+services:
+  orderapi: 
+    build: ./orderapi
+    image: orderapi
+    container_name: orderapi
+    volumes:
+      - ./orderapi/customor.py:/app/customor.py
+    ports:
+      - 15000:15000
+    environment:
+        MONGO_USERNAME: comp3122
+        MONGO_PASSWORD: 12345
+        MONGO_SERVER_HOST: mongo
+        MONGO_SERVER_PORT: 27017
+    depends_on:
+      -  mongo   
+  menu: 
+    build: ./menu
+    image: menu
+    container_name: menu
+    volumes:
+      - ./menu/menu.py:/app/menu.py
+    ports:
+      - 15001:15001
+    environment:
+        MONGO_USERNAME: comp3122
+        MONGO_PASSWORD: 12345
+        MONGO_SERVER_HOST: mongo
+        MONGO_SERVER_PORT: 27017
+    depends_on:
+      -  mongo
+  shop: 
+    build: ./shop
+    image: shop
+    container_name: shop
+    volumes:
+      - ./shop/shop.py:/app/shop.py
+    ports:
+      - 15002:15002
+    environment:
+        MONGO_USERNAME: comp3122
+        MONGO_PASSWORD: 12345
+        MONGO_SERVER_HOST: mongo
+        MONGO_SERVER_PORT: 27017
+    depends_on:
+      -  mongo       
+  admin: 
+    build: ./admin
+    image: admin
+    container_name: admin
+    volumes:
+      - ./admin/admin.py:/app/admin.py
+    ports:
+      - 16000:16000
+    environment:
+        MONGO_USERNAME: comp3122
+        MONGO_PASSWORD: 12345
+        MONGO_SERVER_HOST: mongo
+        MONGO_SERVER_PORT: 27017
+    depends_on:
+      -  mongo                 
+  mongo: #original mongo hostname/username/password
+    image: mongo
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: comp3122
+      MONGO_INITDB_ROOT_PASSWORD: 12345
+      MONGO_INITDB_DATABASE: admin
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+networks:
+  default:
+    name: orderapi
+volumes:
+  mongo_volume:
+    name: mongo_vol
+
