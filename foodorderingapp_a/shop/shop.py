@@ -76,10 +76,8 @@ def logout():
 
 #finish order
 @app.route('/finish_order/<customer_id>', methods=['PATCH',"get"])
+@jwt_required()
 def finish_order(customer_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     new_data = request.json
     item_ids = new_data["item_ids"]
     shop_id = new_data["shop_id"]
@@ -89,10 +87,8 @@ def finish_order(customer_id):
 
 #get delivered order 
 @app.route('/receipts', methods=['GET'])
+@jwt_required()
 def get_receipts():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[]    
     results = list(mycol2.find({"delivery_status":"y"},{"_id":0},).sort('customer_id'))
 

@@ -90,10 +90,8 @@ def about_me():
 
 # Get all customers
 @app.route('/customers', methods=['GET'])
+@jwt_required()
 def get_customers():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[]    
     results = list(mycol.find({},{"_id":0},).sort('customer_id'))
 
@@ -110,10 +108,8 @@ def get_customers():
 
 # Get customer by ID
 @app.route('/customers/<customer_id>', methods=['GET'])
+@jwt_required()
 def get_customer_by_id(customer_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[]    
     results = list(mycol.find({ "customer_id": customer_id},{'_id':0}))
     
@@ -126,10 +122,8 @@ def get_customer_by_id(customer_id):
 
 # get carts created by all customers
 @app.route('/cart', methods=['GET'])
+@jwt_required()
 def get_carts():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[] 
     pipeline=[   
         { "$project": {'_id':0}},     
@@ -164,10 +158,8 @@ def get_carts():
 
 # get cart created by specified customer
 @app.route('/cart/<customer_id>', methods=['GET'])
+@jwt_required()
 def get_cart_by_id(customer_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output = []
     pipeline=[
         { "$match": {'customer_id':customer_id}},           
@@ -200,10 +192,8 @@ def get_cart_by_id(customer_id):
 
 #adding customer
 @app.route('/customers', methods=['POST'])
+@jwt_required()
 def add_customer():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     data = request.json
     customer_id = data["customer_id"]
     username = data["username"]
@@ -214,10 +204,8 @@ def add_customer():
 
 #editing customer
 @app.route('/customers/<customer_id>', methods=['PATCH'])
+@jwt_required()
 def edit_customer(customer_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     new_data = request.json
     username = new_data["username"]
     deliver_address = new_data["deliver_address"]
@@ -227,20 +215,16 @@ def edit_customer(customer_id):
 
 #deleting customer
 @app.route('/customers/<customer_id>/delete', methods=['DELETE'])
+@jwt_required()
 def del_customer(customer_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     del_data = { "customer_id" : customer_id }
     mycol.delete_one(del_data)
     return jsonify({"message":"deleted customer"}),200
 
 #creating cart
 @app.route('/cart', methods=['POST'])
+@jwt_required()
 def add_cart():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     data = request.json
     customer_id = data["customer_id"]
     item_ids = data["item_ids"]
@@ -267,20 +251,16 @@ def edit_cart(customer_id):
 
 #empty cart
 @app.route('/cart/<customer_id>/delete', methods=['DELETE'])
+@jwt_required()
 def empty_cart(customer_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     del_data = { "customer_id" : customer_id }
     mycol2.delete_one(del_data)
     return jsonify({"message":"cart emptied"}),200
 
 #Get all shops
 @app.route('/shops', methods=['GET'])
+@jwt_required()
 def get_shops():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[]    
     results = list(mycol3.find({},{"_id":0},).sort('shop_id'))
 
@@ -297,10 +277,8 @@ def get_shops():
 
 # Get shop by ID
 @app.route('/shops/<shop_id>', methods=['GET'])
+@jwt_required()
 def get_shop_by_id(shop_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[]    
     results = list(mycol3.find({ "shop_id": shop_id},{'_id':0}))
     
@@ -313,10 +291,8 @@ def get_shop_by_id(shop_id):
 
 # get menu created by all shops
 @app.route('/menu', methods=['GET'])
+@jwt_required()
 def get_menu():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[] 
     pipeline=[   
         { "$project": {'_id':0}},     
@@ -351,10 +327,8 @@ def get_menu():
 
 # get menu created by specified shop
 @app.route('/menu/<shop_id>', methods=['GET'])
+@jwt_required()
 def get_menu_by_id(shop_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[] 
     pipeline=[
         { "$match": {'shop_id':shop_id}},           
@@ -387,10 +361,8 @@ def get_menu_by_id(shop_id):
 
 #adding shop
 @app.route('/shops', methods=['POST'])
+@jwt_required()
 def add_shop():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     data = request.json
     shop_id = data["shop_id"]
     shopname = data["shopname"]
@@ -401,10 +373,8 @@ def add_shop():
 
 #editing shop
 @app.route('/shops/<shop_id>', methods=['PATCH'])
+@jwt_required()
 def edit_shop(shop_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     new_data = request.json
     shopname = new_data["shopname"]
     shop_address = new_data["shop_address"]
@@ -414,20 +384,16 @@ def edit_shop(shop_id):
 
 #deleting shop
 @app.route('/shops/<shop_id>/delete', methods=['DELETE'])
+@jwt_required()
 def del_shop(shop_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     del_data = { "shop_id" : shop_id }
     mycol3.delete_one(del_data)
     return jsonify({"message":"deleted shop"}),200
 
 #creating menu
 @app.route('/menu', methods=['POST'])
+@jwt_required()
 def add_menu():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     data = request.json
     shop_id = data["shop_id"]
     item_ids = data["item_ids"]
@@ -436,10 +402,8 @@ def add_menu():
 
 #editing menu
 @app.route('/menu/<shop_id>', methods=['PATCH'])
+@jwt_required()
 def edit_menu(shop_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     new_data = request.json
     item_ids = new_data["item_ids"]
     mycol4.update_one({"shop_id": shop_id}, { "$set" : new_data})
@@ -447,20 +411,16 @@ def edit_menu(shop_id):
 
 #empty menu
 @app.route('/menu/<shop_id>/delete', methods=['DELETE'])
+@jwt_required()
 def empty_menu(shop_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     del_data = { "shop_id" : shop_id }
     mycol4.delete_one(del_data)
     return jsonify({"message":"menu emptied"}),200
 
 #generate order from cart
 @app.route('/cart/<customer_id>/order', methods=['GET'])
+@jwt_required()
 def generate_order_by_id(customer_id):   
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     pipeline=[
         { "$match": {'customer_id':customer_id}}, 
         { "$project": {'_id':0}},        
@@ -499,10 +459,8 @@ def generate_order_by_id(customer_id):
 
 # Get all orders
 @app.route('/orders', methods=['GET'])
+@jwt_required()
 def get_orders():
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[]    
     results = list(mycol5.find({},{"_id":0},).sort('customer_id'))
 
@@ -518,10 +476,8 @@ def get_orders():
 
 # Get order by customer id
 @app.route('/orders/<customer_id>', methods=['GET'])
+@jwt_required()
 def get_order_by_id(customer_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     output =[]    
     results = list(mycol5.find({ "customer_id": customer_id},{'_id':0}))
     
@@ -534,10 +490,8 @@ def get_order_by_id(customer_id):
 
 #delete order
 @app.route('/orders/<customer_id>/delete', methods=['DELETE'])
+@jwt_required()
 def del_order(customer_id):
-    if 'token' not in session:
-            # If user have not login
-            return jsonify({"error":"you need to login first"}),401
     del_data = { "customer_id" : customer_id }
     mycol5.delete_one(del_data)
     return jsonify({"message":"order deleted"}),200
